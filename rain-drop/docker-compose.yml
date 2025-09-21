@@ -11,6 +11,8 @@ services:
       start_period: 10s
     volumes:
       - ./db:/var/lib/postgresql/data
+      - ./Game:/mnt/d/Games # Optional: mount a host directory to the container for persistent storage
+      - "/GameFolder:/mnt/d/Game Folder" # Optional: mount a host directory to the container for persistent storage
     environment:
       - POSTGRES_PASSWORD=drop
       - POSTGRES_USER=drop
