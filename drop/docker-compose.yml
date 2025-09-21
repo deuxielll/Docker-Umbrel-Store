@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d drop -U drop"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - ${APP_DATA_DIR}/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=drop
+      - POSTGRES_USER=drop
+      - POSTGRES_DB=drop
+
+  drop:
+    image: ghcr.io/drop-oss/drop:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 3055:3000   # unique external port for Drop
+    volumes:
+      - ${APP_DATA_DIR}/library:/library
+      - ${APP_DATA_DIR}/data:/data
+    environment:
+      - DATABASE_URL=postgres://drop:drop@postgres:5432/drop
+      - EXTERNAL_URL=http://umbrel.local:3055
