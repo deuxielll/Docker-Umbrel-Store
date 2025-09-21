@@ -1,0 +1,33 @@
+manifestVersion: 1
+id: "rain-drop"
+name: "Drop"
+tagline: "Open-source, self-hosted game storage and sharing platform."
+icon: "https://docs.droposs.org/drop.svg"
+category: "Files"
+version: "1.0.0"
+port: 3001
+description: |
+  Drop is an open-source, self-hosted game storage and sharing platform.
+  Flexible, secure, and modern. Upload, share, and manage your files securely with Postgres as the backend.
+
+  Postgres is used as the database.
+  
+  - Flexible, secure, and modern.
+  - Upload, share, and manage your files securely with Postgres as the backend.
+  
+developer: "Drop OSS"
+website: "https://docs.droposs.org/"
+submitter: "Your Name"
+submission: "https://github.com/your-github/your-repo"
+repo: "https://github.com/drop-oss/drop"
+support: "https://github.com/drop-oss/drop/issues"
+gallery:
+  - "https://i.imgur.com/EXAMPLE.png"
+  - "https://i.imgur.com/EXAMPLE.png"
+  - "https://i.imgur.com/EXAMPLE.png"
+releaseNotes: |
+  - Initial release.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
