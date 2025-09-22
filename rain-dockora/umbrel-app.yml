@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: "dockora" # The unique ID of your app. Must be lowercase, contain no spaces, and can only contain letters, numbers, and dashes.
+name: "Dockora" # The name of your app.
+tagline: "A minimalist docker dashboard."
+icon: "" # The URL of your app's icon. Must be a 512x512 SVG or PNG.
+category: "Productivity" # The category of your app.
+version: "1.0.0" # The version of your app.
+port: 3000 # The port your app's web UI is exposed on.
+description: |
+  Dockora is a modern, self-hosted dashboard designed to simplify the management of your Docker containers, applications, and stacks. It provides a clean, customizable interface with various widgets to monitor your system and access your services with ease.
+
+developer: "Deuxielll/Rainiel Montanez"
+website: "rainielmontanez.netlify.app"
+submitter: "Deuxielll/Rain"
+submission: "https://github.com/your-github/your-repo"
+repo: "https://github.com/deuxielll/dockora"
+support: "https://github.com/your-github/your-repo/issues"
+gallery:
+  - "https://camo.githubusercontent.com/ece7f02e21cf620b457f2c1725a63053ca5ba4e19a74642b8ccd0d54c7766c5e/68747470733a2f2f667367657a64616b6f69616e706a68696e67797a2e73757061626173652e636f2f73746f726167652f76312f6f626a6563742f7075626c69632f696d616765732f33643266316230322d616666322d343965662d613131332d6230356232366333333438612e706e67"
+releaseNotes: |
+  - Beta.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

@@ -1,0 +1,9 @@
+services:
+  app:
+    image: "hello-world" # Replace with your app's Docker image
+    ports:
+      - "8080:80" # Map a port from the host to the container
+    volumes:
+      - ./data:/data # Optional: mount a host directory to the container for persistent storage
+    environment:
+      - EXAMPLE_VARIABLE=example_value # Optional: set environment variables

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dockora Share</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e; /* dark-bg */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #d1d5db; /* gray-200 */
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #252526; /* dark-bg-secondary */
+            border-radius: 1rem; /* rounded-2xl */
+            box-shadow: 8px 8px 20px rgba(0,0,0,0.6), -8px -8px 20px rgba(255,255,255,0.15); /* shadow-neo */
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 28px;
+            color: #d1d5db; /* gray-200 */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .item-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem; /* space-y-3 */
+        }
+        .item-list li {
+            background: #252526; /* dark-bg-secondary */
+            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.6), inset -3px -3px 6px rgba(255,255,255,0.15); /* shadow-neo-inset (smaller) */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 0.75rem; /* p-3 */
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .item-list li:hover {
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.6), -6px -6px 12px rgba(255,255,255,0.15); /* hover:shadow-neo */
+        }
+        .item-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            min-width: 0; /* Allow text to truncate */
+            margin-right: 1rem; /* Gap between info and buttons */
+        }
+        .item-name {
+            font-weight: 600; /* font-semibold */
+            color: #d1d5db; /* gray-200 */
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .item-size {
+            font-size: 14px;
+            color: #9ca3af; /* gray-300 */
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+        .item-type {
+            font-size: 12px;
+            color: #9ca3af; /* gray-300 */
+            margin-left: 10px;
+            text-transform: capitalize;
+            white-space: nowrap;
+        }
+        .item-actions {
+            display: flex;
+            gap: 0.5rem; /* space-x-2 */
+            margin-top: 0.5rem; /* For wrapping on small screens */
+        }
+        @media (min-width: 640px) { /* sm breakpoint */
+            .item-actions {
+                margin-top: 0;
+            }
+        }
+
+        .action-btn {
+            background: #1e1e1e; /* dark-bg */
+            color: #3b82f6; /* accent */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            border-radius: 0.5rem; /* rounded-lg */
+            text-decoration: none;
+            font-weight: 600; /* font-semibold */
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.6), -6px -6px 12px rgba(255,255,255,0.15); /* shadow-neo */
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease-in-out;
+            border: none; /* Remove default button border */
+            cursor: pointer;
+        }
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+        .action-btn:active {
+            box-shadow: inset 6px 6px 12px rgba(0,0,0,0.6), inset -6px -6px 12px rgba(255,255,255,0.15); /* active:shadow-neo-inset */
+        }
+        .download-all-btn {
+            display: block;
+            width: fit-content;
+            margin: 30px auto 0;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 30px;
+        }
+        .error-message {
+            color: #ef4444; /* red-500 */
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #3b82f6; /* accent */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .icon-small {
+            width: 16px;
+            height: 16px;
+        }
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .breadcrumb-item {
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+        .breadcrumb-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .breadcrumb-item.active {
+            color: #d1d5db;
+            font-weight: 600;
+        }
+        .go-up-btn {
+            background: #1e1e1e;
+            color: #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 6px 6px 12px rgba(0,0,0,0.6), -6px -6px 12px rgba(255,255,255,0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease-in-out;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        .go-up-btn:hover {
+            opacity: 0.9;
+        }
+        .go-up-btn:active {
+            box-shadow: inset 6px 6px 12px rgba(0,0,0,0.6), inset -6px -6px 12px rgba(255,255,255,0.15);
+        }
+        .go-up-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="share-title">Loading Shared Content...</h1>
+        <div id="loading" class="loading-spinner"></div>
+        <p id="error-message" class="error-message" style="display: none;"></p>
+
+        <div id="file-browser-controls" style="display: none;">
+            <div class="breadcrumbs" id="breadcrumbs"></div>
+            <button id="go-up-btn" class="go-up-btn" style="display: none;">
+                <svg class="icon-small" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"></polyline><line x1="12" y1="18" x2="12" y2="6"></line></svg>
+                Up
+            </button>
+        </div>
+        
+        <ul id="item-list" class="item-list" style="display: none;"></ul>
+        <a id="download-all-link" class="action-btn download-all-btn" style="display: none;">
+            <svg class="icon-small" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download All as Zip
+        </a>
+    </div>
+
+    <script>
+        const API_BASE_URL = window.location.origin + '/api';
+        const pathParts = window.location.pathname.split('/');
+        const token = pathParts[pathParts.length - 1];
+
+        const shareTitle = document.getElementById('share-title');
+        const loadingSpinner = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const itemList = document.getElementById('item-list');
+        const downloadAllLink = document.getElementById('download-all-link');
+        const breadcrumbsContainer = document.getElementById('breadcrumbs');
+        const goUpButton = document.getElementById('go-up-btn');
+        const fileBrowserControls = document.getElementById('file-browser-controls');
+
+        let currentVirtualPath = '/'; // State to track current path in the share
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function getIconSvg(type) {
+            if (type === 'dir') {
+                return `<svg class="icon text-blue-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`;
+            }
+            return `<svg class="icon text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
+        }
+
+        function renderBreadcrumbs() {
+            breadcrumbsContainer.innerHTML = '';
+            const parts = currentVirtualPath.split('/').filter(Boolean);
+            let path = '';
+
+            const rootCrumb = document.createElement('span');
+            rootCrumb.className = 'breadcrumb-item';
+            rootCrumb.textContent = 'Root';
+            rootCrumb.addEventListener('click', () => navigateTo('/'));
+            breadcrumbsContainer.appendChild(rootCrumb);
+
+            parts.forEach((part, index) => {
+                path += `/${part}`;
+                const separator = document.createElement('span');
+                separator.textContent = '/';
+                separator.style.margin = '0 0.25rem';
+                separator.style.color = '#6b7280'; /* gray-400 */
+                breadcrumbsContainer.appendChild(separator);
+
+                const crumb = document.createElement('span');
+                crumb.className = `breadcrumb-item ${index === parts.length - 1 ? 'active' : ''}`;
+                crumb.textContent = part;
+                crumb.addEventListener('click', () => navigateTo(path));
+                breadcrumbsContainer.appendChild(crumb);
+            });
+
+            goUpButton.disabled = currentVirtualPath === '/';
+        }
+
+        async function fetchSharedContent(virtualPath) {
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+            itemList.style.display = 'none';
+            downloadAllLink.style.display = 'none';
+            fileBrowserControls.style.display = 'none';
+            itemList.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/shares/${token}/details?sub_path=${encodeURIComponent(virtualPath)}`);
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Failed to fetch shared content.');
+                }
+                const data = await response.json();
+
+                shareTitle.textContent = `Shared: ${data.name}`;
+                currentVirtualPath = data.current_virtual_path; // Update path from backend response
+                renderBreadcrumbs();
+                fileBrowserControls.style.display = 'block';
+                
+                if (data.contents && data.contents.length > 0) {
+                    data.contents.forEach(item => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <div class="item-info">
+                                ${getIconSvg(item.type)}
+                                <span class="item-name" title="${item.name}">${item.name}</span>
+                                <span class="item-type">${item.type}</span>
+                                <span class="item-size">${item.type === 'file' ? formatSize(item.size) : ''}</span>
+                            </div>
+                            <div class="item-actions">
+                                ${item.type === 'file' ? `
+                                <a href="${API_BASE_URL}/shares/${token}/download?file=${encodeURIComponent(item.path)}" class="action-btn" download>
+                                    <svg class="icon-small" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    Download
+                                </a>
+                                <a href="${API_BASE_URL}/shares/${token}/view?file=${encodeURIComponent(item.path)}" target="_blank" class="action-btn">
+                                    <svg class="icon-small" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    View
+                                </a>` : ''}
+                            </div>
+                        `;
+                        if (item.type === 'dir') {
+                            listItem.addEventListener('click', (e) => {
+                                navigateTo(item.path);
+                            });
+                        } else { // File
+                            listItem.addEventListener('click', (e) => {
+                                // Only trigger view if not clicking on a button
+                                if (!e.target.closest('.action-btn')) {
+                                    window.open(`${API_BASE_URL}/shares/${token}/view?file=${encodeURIComponent(item.path)}`, '_blank');
+                                }
+                            });
+                        }
+                        itemList.appendChild(listItem);
+                    });
+                    itemList.style.display = 'flex';
+                    
+                    // Update "Download All" button
+                    const downloadName = currentVirtualPath === '/' ? share.name : currentVirtualPath.split('/').pop();
+                    downloadAllLink.href = `${API_BASE_URL}/shares/${token}/download?current_virtual_path=${encodeURIComponent(currentVirtualPath)}`;
+                    downloadAllLink.textContent = `Download ${downloadName === '/' ? 'All' : downloadName} as Zip`;
+                    downloadAllLink.style.display = 'inline-flex';
+
+                } else {
+                    errorMessage.textContent = 'No items found in this folder.';
+                    errorMessage.style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Error fetching shared content:', error);
+                shareTitle.textContent = 'Error Loading Share';
+                errorMessage.textContent = error.message || 'Could not load shared content. The link might be invalid or expired.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        function navigateTo(path) {
+            currentVirtualPath = path;
+            fetchSharedContent(currentVirtualPath);
+        }
+
+        function goUp() {
+            if (currentVirtualPath === '/') return;
+            const lastSlashIndex = currentVirtualPath.lastIndexOf('/');
+            const parentPath = lastSlashIndex === 0 ? '/' : currentVirtualPath.substring(0, lastSlashIndex);
+            navigateTo(parentPath);
+        }
+
+        goUpButton.addEventListener('click', goUp);
+
+        if (token) {
+            fetchSharedContent(currentVirtualPath);
+        } else {
+            shareTitle.textContent = 'Invalid Share Link';
+            errorMessage.textContent = 'No share token provided in the URL.';
+            errorMessage.style.display = 'block';
+            loadingSpinner.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
